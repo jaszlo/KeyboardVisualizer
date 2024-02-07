@@ -49,6 +49,7 @@ class KeyboardApp:
         self.root = root
         self.root.geometry("600x300")
         self.root.title("Keyboard Visualizer")
+        self.root.attributes("-topmost", True)
         self.key_listner = KeyHookThread(self.on_key_action)
         self.key_listner.start()
 
