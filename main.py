@@ -1,42 +1,29 @@
 # Global imports
 import tkinter as tk
 from tkinter import ttk
-from enum import Enum
-from dataclasses import dataclass
 
 # Local imports
 from py_src.KeyHook import KeyHookThread, KeyActionType
+from py_src.Styles import ColorLevel, Styles
 
-# F1 = Minimize/Maximize the window
+# CTRL + F1 = Show/Hide the window
 # Ctrl + Esc = Quit the application
 FUNCTIONAL_KEYS =  ["F1", "Esc"]
 CTRL_KEY = "Ctrl"
 
-# Graphics settings classes
-class ColorLevel(Enum):
-    Background = "#04151f"
-    Intermediate = "#183A37"
-    Highlight = "#9097C0"
-
-@dataclass
-class Styles(object):
-    button_default_name: str = "TButtonDefault"
-    button_default: ttk.Style = ttk.Style().configure("TButtonDefault", font=("Arial", 12), padding=7, foreground=ColorLevel.Background.value, background=ColorLevel.Intermediate.value, relief="flat")
-
-    buttuon_highlight_name: str = "TButtonHighlighted"
-    button_highlight = ttk.Style = ttk.Style().configure("TButtonHighlighted", font=("Arial", 12), padding=7, foreground=ColorLevel.Background.value, background=ColorLevel.Highlight.value, relief="flat")
-
 class KeyboardApp(object):
     def __init__(self, root):
-        self.STYLES = Styles()
         self.root = root
-        self.root.geometry("600x300")
+        self.styles = Styles()
+        self.root.geometry(self.styles.dimensions)
         self.root.title("Keyboard Visualizer")
         self.root.attributes("-topmost", True)
-        self.ctrl_pressed = False
+
         # Remove default window decorations
         self.root.overrideredirect(True)
     
+        # Flag to check if the CTRL key is pressed
+        self.ctrl_pressed = False
 
         # Thread running keyHook.exe as subprocess reading its stdout and calling the callback in the main thread
         self.key_listner = KeyHookThread(self.on_key_action)
@@ -44,14 +31,14 @@ class KeyboardApp(object):
 
         # Make background transparent
         self.root.attributes('-alpha', 0.9)
-        self.root.configure(bg=ColorLevel.Background.value)
+        self.root.configure(bg=ColorLevel.Background.value, borderwidth=7, highlightthickness=0)
 
         # Define the updated keyboard layout
         self.keyboard_layout = [
             ["Tab", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
             ["Caps", "Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P"],
-            ["Shift", "A", "S", "D", "F", "G", "H", "J", "K", "L"],
-            ["Ctrl", "Y", "X", "C", "V", "Space", "B", "N", "M"]
+            ["Shift", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Back"],
+            ["Ctrl", "ALT", "Y", "X", "C", "V", "Space", "B", "N", "M", "Enter"]
         ]
 
         self.keys = [key for row in self.keyboard_layout for key in row]
@@ -65,7 +52,7 @@ class KeyboardApp(object):
         # Create and place the key buttons on the canvas with resizable options
         for row_idx, row in enumerate(self.keyboard_layout):
             for col_idx, key in enumerate(row):
-                button = ttk.Button(self.button_canvas, text=key, style=self.STYLES.button_default)
+                button = ttk.Button(self.button_canvas, text=key, style=self.styles.button_default_name)
                 button.grid(row=row_idx, column=col_idx, sticky="nsew", padx=1, pady=1)
                 # Make buttons resizable
                 self.button_canvas.columnconfigure(col_idx, weight=1, uniform="group1")
@@ -87,7 +74,7 @@ class KeyboardApp(object):
         self.x = event.x
         self.y = event.y
 
-    def dragging(self, event):
+    def dragging(self, _event):
         x = self.root.winfo_pointerx() - self.x
         y = self.root.winfo_pointery() - self.y
         self.root.geometry(f"+{x}+{y}")
@@ -105,7 +92,7 @@ class KeyboardApp(object):
 
         # Highlight the corresponding button when the key is pressed, or reset it when released
         if pressed_key in self.keys:
-            new_style = self.STYLES.button_highlight if KeyActionType.is_press(action_type) else self.STYLES.button_default
+            new_style = self.styles.button_highlight_name if KeyActionType.is_press(action_type) else self.styles.button_default_name
             self.key_buttons[pressed_key].configure(style=new_style)
         # Check for exit or minimize/maximize commands
         elif pressed_key in FUNCTIONAL_KEYS and KeyActionType.is_press(action_type):
@@ -114,7 +101,6 @@ class KeyboardApp(object):
             # CTRL has been pressed, therefore function keys are now available
             match pressed_key:
                 case "F1":
-                    print(self.root.attributes('-alpha'))
                     self.root.attributes('-alpha', 0.0) if self.root.attributes('-alpha') > 0.0 else self.root.attributes('-alpha', 0.9)
                 case "Esc":
                     self.quit()
@@ -122,7 +108,5 @@ class KeyboardApp(object):
                     pass
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = KeyboardApp(root)
-    root.mainloop()
-
+    app = KeyboardApp(tk.Tk())
+    app.root.mainloop()

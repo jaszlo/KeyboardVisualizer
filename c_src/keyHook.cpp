@@ -16,9 +16,9 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         return CallNextHookEx(NULL, nCode, wParam, lParam);
     }
 
-    char *prefix = (wParam == WM_KEYDOWN) ? "Press-" : "Release-";
-
     KBDLLHOOKSTRUCT* pKbStruct = (KBDLLHOOKSTRUCT*)lParam;
+    char *prefix = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) ? "Press-" : "Release-";
+
     // Check for Controll Keys
     switch (pKbStruct->vkCode) {
         case VK_TAB:
@@ -36,8 +36,18 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         case VK_LCONTROL:
         case VK_RCONTROL:
         case VK_CONTROL:
-        case MK_CONTROL:
             printf("%sCtrl\n", prefix);
+            break;
+        case VK_MENU:
+        case VK_LMENU:
+        case VK_RMENU:
+            printf("%sAlt\n", prefix);
+            break;
+        case VK_RETURN:
+            printf("%sEnter\n", prefix);
+            break;
+        case VK_BACK:
+            printf("%sBack\n", prefix);
             break;
         // Function keys F1-F3
         case VK_F1:

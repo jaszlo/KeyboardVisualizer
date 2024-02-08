@@ -13,6 +13,7 @@ class KeyActionType(Enum):
     def is_press(string):
         return string == KeyActionType.Press.value
 
+
 class KeyHookThread(threading.Thread):
     def __init__(self, callback):
         super().__init__()
@@ -37,7 +38,6 @@ class KeyHookThread(threading.Thread):
             )
         for stdout_line in iter(self.proc.stdout.readline, ""):
             if not self.alive:
-                print(stdout_line)
                 break
             if stdout_line != b'':
                 yield stdout_line.decode("utf-8").strip()
