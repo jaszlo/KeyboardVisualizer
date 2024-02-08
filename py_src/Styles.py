@@ -7,6 +7,19 @@ class ColorLevel(Enum):
     Intermediate = "#183A37"
     Highlight = "#495283"
     Text = "#A7BBEC"
+    ALPHA = 0.9
+
+class KeyboadLayout(object):
+    SPANS = {
+        # (COL, ROW)
+        "Back": (1, 2),
+        "Enter": (2, 1),
+        "Space": (6, 1),
+    }
+
+    @staticmethod
+    def span_of(key):
+        return KeyboadLayout.SPANS.get(key, (1, 1))
 
 
 class Styles(object):
@@ -22,11 +35,15 @@ class Styles(object):
             borderwidth=1,
             focuscolor="none",
             margin=5,
+            padding=0,
             foreground="dark blue",
+            highlightedbackground="dark blue",
+            highlightedcolor="dark blue",
+            activeforeground="dark blue",
             background="dark blue",
+            activebackground="dark blue",
             relief="flat"
         )
-        self.button_default.map(self.button_default_name, background=[("active", "dark blue")])
 
         self.button_highlight = ttk.Style = ttk.Style()
         self.button_highlight.configure(
@@ -35,8 +52,12 @@ class Styles(object):
             borderwidth=1,
             focuscolor="none",
             margin=5,
+            padding=1,
             foreground="white",
+            highlightedbackground="white",
+            highlightedcolor="white",
+            activeforeground="white",
             background="white",
+            activebackground="white",
             relief="flat"
         )
-        self.button_highlight.map(self.button_highlight_name, background=[("active", "white")])

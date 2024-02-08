@@ -4,7 +4,7 @@ from tkinter import ttk
 
 # Local imports
 from py_src.KeyHook import KeyHookThread, KeyActionType
-from py_src.Styles import ColorLevel, Styles
+from py_src.Styles import ColorLevel, Styles, KeyboadLayout
 
 # CTRL + F1 = Show/Hide the window
 # Ctrl + Esc = Quit the application
@@ -19,6 +19,10 @@ class KeyboardApp(object):
         self.root.title("Keyboard Visualizer")
         self.root.attributes("-topmost", True)
 
+        # Set the window background color and border
+        self.root.attributes('-alpha', ColorLevel.ALPHA.value)
+        self.root.configure(bg=ColorLevel.Background.value, borderwidth=7, highlightthickness=0)
+
         # Remove default window decorations 
         self.root.overrideredirect(True)
     
@@ -30,16 +34,17 @@ class KeyboardApp(object):
         # Start the thread at the end of the initialization to prevent exceptions
 
         # Make background transparent
-        self.root.attributes('-alpha', 0.9)
-        self.root.configure(bg=ColorLevel.Background.value, borderwidth=7, highlightthickness=0)
 
         # Define the updated keyboard layout
         self.keyboard_layout = [
-            ["Tab", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-            ["Caps", "Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P"],
-            ["Shift", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Back"],
-            ["Ctrl", "Alt", "Y", "X", "C", "V", "Space", "B", "N", "M", "Enter"]
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+            ["Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P", "Back"],
+            ["Tab", "A", "S", "D", "F", "G", "H", "J", "K", "L"],
+            ["Caps", "", "Y", "X", "C", "V", "B", "N", "M", "Enter"],
+            ["Ctrl", "Shift", "Alt", "Space", "", "", "", "", "", "", ""]
         ]
+        self.rows = len(self.keyboard_layout)
+        self.cols = max(len(row) for row in self.keyboard_layout)
 
         self.keys = [key for row in self.keyboard_layout for key in row]
     
@@ -52,8 +57,13 @@ class KeyboardApp(object):
         # Create and place the key buttons on the canvas with resizable options
         for row_idx, row in enumerate(self.keyboard_layout):
             for col_idx, key in enumerate(row):
+                if (key == ""):
+                    continue
                 button = ttk.Button(self.button_canvas, text=key, style=self.styles.button_default_name)
-                button.grid(row=row_idx, column=col_idx, sticky="nsew", padx=1, pady=1)
+                # Get the column and row span of the key
+                colspan, rowspan = KeyboadLayout.span_of(key)
+
+                button.grid(row=row_idx, column=col_idx, sticky="nsew", padx=1, pady=1, columnspan=colspan, rowspan=rowspan)
                 # Make buttons resizable
                 self.button_canvas.columnconfigure(col_idx, weight=1, uniform="group1")
                 self.button_canvas.rowconfigure(row_idx, weight=1)
@@ -82,7 +92,7 @@ class KeyboardApp(object):
         y = event.y_root - self.start_y
         self.root.geometry(f"+{x}+{y}")
 
-    def __quit_internal(self):
+    def _quit_internal(self):
         # Call to close subprocess so the thread running it can join
         self.key_listner.stop()
         self.key_listner.join()
@@ -91,7 +101,7 @@ class KeyboardApp(object):
 
     def quit(self):
         # Needs to be executed from main thread
-        self.root.after(0, self.__quit_internal)
+        self.root.after(0, self._quit_internal)
 
     def run(self):
         self.root.mainloop()
@@ -112,7 +122,7 @@ class KeyboardApp(object):
             # CTRL has been pressed, therefore function keys are now available
             match pressed_key:
                 case "F1":
-                    self.root.attributes("-alpha", 0.0) if self.root.attributes("-alpha") > 0.0 else self.root.attributes("-alpha", 0.9)
+                    self.root.attributes("-alpha", 0.0) if self.root.attributes("-alpha") > 0.0 else self.root.attributes("-alpha", ColorLevel.ALPHA)
                 case "Esc":
                     # Closing takes some time so immediately hide the window
                     #self.root.attributes("-alpha", 0.0)

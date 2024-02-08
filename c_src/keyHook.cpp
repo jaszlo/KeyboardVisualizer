@@ -20,6 +20,8 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     char *prefix = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) ? "Press-" : "Release-";
 
     // Check for Controll Keys
+    printf("%s%d\n", prefix, pKbStruct->vkCode);
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
     switch (pKbStruct->vkCode) {
         case VK_TAB:
             printf("%sTab\n", prefix);
