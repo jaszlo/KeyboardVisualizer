@@ -12,8 +12,8 @@ FUNCTIONAL_KEYS =  ["F1", "Esc"]
 CTRL_KEY = "Ctrl"
 
 class KeyboardApp(object):
-    def __init__(self, root):
-        self.root = root
+    def __init__(self):
+        self.root = tk.Tk()
         self.styles = Styles()
         self.root.geometry(self.styles.dimensions)
         self.root.title("Keyboard Visualizer")
@@ -27,7 +27,7 @@ class KeyboardApp(object):
 
         # Thread running keyHook.exe as subprocess reading its stdout and calling the callback in the main thread
         self.key_listner = KeyHookThread(self.on_key_action)
-        self.key_listner.start()
+        # Start the thread at the end of the initialization to prevent exceptions
 
         # Make background transparent
         self.root.attributes('-alpha', 0.9)
@@ -44,7 +44,7 @@ class KeyboardApp(object):
         self.keys = [key for row in self.keyboard_layout for key in row]
     
         # Create a canvas to hold the key buttons
-        self.button_canvas = tk.Canvas(root, bg=ColorLevel.Background.value, highlightthickness=0)
+        self.button_canvas = tk.Canvas(self.root, bg=ColorLevel.Background.value, highlightthickness=0, background=ColorLevel.Background.value)
         self.button_canvas.pack(expand=True, fill='both')
 
         # Create a dictionary to store the key buttons
@@ -70,13 +70,16 @@ class KeyboardApp(object):
         self.root.bind("<ButtonPress-1>", self.start_drag)
         self.root.bind("<B1-Motion>", self.dragging)
 
-    def start_drag(self, event):
-        self.x = event.x
-        self.y = event.y
+        # Start the key listener thread
+        self.key_listner.start()
 
-    def dragging(self, _event):
-        x = self.root.winfo_pointerx() - self.x
-        y = self.root.winfo_pointery() - self.y
+    def start_drag(self, event):
+        self.start_x = event.x_root - self.root.winfo_rootx()
+        self.start_y = event.y_root - self.root.winfo_rooty()
+
+    def dragging(self, event):
+        x = event.x_root - self.start_x
+        y = event.y_root - self.start_y
         self.root.geometry(f"+{x}+{y}")
 
     def __quit_internal(self):
@@ -89,6 +92,9 @@ class KeyboardApp(object):
     def quit(self):
         # Needs to be executed from main thread
         self.root.after(0, self.__quit_internal)
+
+    def run(self):
+        self.root.mainloop()
 
     def on_key_action(self, action_type, pressed_key):
         # Set CTRL Flag if pressed to enable function keys
@@ -115,5 +121,5 @@ class KeyboardApp(object):
                     pass
 
 if __name__ == "__main__":
-    app = KeyboardApp(tk.Tk())
-    app.root.mainloop()
+    app = KeyboardApp()
+    app.run()

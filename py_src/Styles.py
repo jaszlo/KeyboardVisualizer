@@ -19,21 +19,24 @@ class Styles(object):
         self.button_default.configure(
             self.button_default_name,
             font=("Anonymous Pro", 10, "bold"),
-            padding=0,
+            borderwidth=1,
+            focuscolor="none",
             margin=5,
-            fg=ColorLevel.Text.value,
-            bg=ColorLevel.Intermediate.value,
-            color=ColorLevel.Background.value,
-            #relief="flat"
+            foreground="dark blue",
+            background="dark blue",
+            relief="flat"
         )
+        self.button_default.map(self.button_default_name, background=[("active", "dark blue")])
 
         self.button_highlight = ttk.Style = ttk.Style()
         self.button_highlight.configure(
             self.button_highlight_name,
             font=("Anonymous Pro", 12, "bold"),
-            padding=0,
+            borderwidth=1,
+            focuscolor="none",
             margin=5,
-            fg=ColorLevel.Text.value,
-            bg=ColorLevel.Highlight.value,
-            color=ColorLevel.Intermediate.value,
+            foreground="white",
+            background="white",
+            relief="flat"
         )
+        self.button_highlight.map(self.button_highlight_name, background=[("active", "white")])
