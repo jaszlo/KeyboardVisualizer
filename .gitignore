@@ -1,6 +1,9 @@
 # VS Code
 .vs/
 
+# PyCache files
+__pycache__/
+py_src/__pycache__/
 
 # Prerequisites
 *.d

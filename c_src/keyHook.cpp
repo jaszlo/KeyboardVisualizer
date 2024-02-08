@@ -39,7 +39,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         case MK_CONTROL:
             printf("%sCtrl\n", prefix);
             break;
-        // Function keys F1 - F12
+        // Function keys F1-F3
         case VK_F1:
         case VK_F2:
         case VK_F3:
