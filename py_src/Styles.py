@@ -6,7 +6,7 @@ class ColorLevel(Enum):
     Background = "#04151f"
     Intermediate = "#183A37"
     Highlight = "#495283"
-    Text = "#F2F2F2"
+    Text = "#A7BBEC"
 
 
 class Styles(object):
@@ -15,23 +15,25 @@ class Styles(object):
     dimensions = "725x260+50+600" # width x height + x_offset + y_offset
 
     def __init__(self):
-        self.button_default: ttk.Style = ttk.Style().configure(
+        self.button_default: ttk.Style = ttk.Style()
+        self.button_default.configure(
             self.button_default_name,
             font=("Anonymous Pro", 10, "bold"),
             padding=0,
             margin=5,
-            foreground=ColorLevel.Background.value,
-            background=ColorLevel.Intermediate.value,
+            fg=ColorLevel.Text.value,
+            bg=ColorLevel.Intermediate.value,
             color=ColorLevel.Background.value,
-            relief="flat"
+            #relief="flat"
         )
 
-        self.button_highlight = ttk.Style = ttk.Style().configure(
+        self.button_highlight = ttk.Style = ttk.Style()
+        self.button_highlight.configure(
             self.button_highlight_name,
-            font=("Anonymous Pro", 10, "bold"),
+            font=("Anonymous Pro", 12, "bold"),
             padding=0,
             margin=5,
-            foreground=ColorLevel.Background.value,
-            background=ColorLevel.Highlight.value,
-            relief="flat"
+            fg=ColorLevel.Text.value,
+            bg=ColorLevel.Highlight.value,
+            color=ColorLevel.Intermediate.value,
         )

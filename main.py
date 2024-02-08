@@ -19,7 +19,7 @@ class KeyboardApp(object):
         self.root.title("Keyboard Visualizer")
         self.root.attributes("-topmost", True)
 
-        # Remove default window decorations
+        # Remove default window decorations 
         self.root.overrideredirect(True)
     
         # Flag to check if the CTRL key is pressed
@@ -38,7 +38,7 @@ class KeyboardApp(object):
             ["Tab", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
             ["Caps", "Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P"],
             ["Shift", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Back"],
-            ["Ctrl", "ALT", "Y", "X", "C", "V", "Space", "B", "N", "M", "Enter"]
+            ["Ctrl", "Alt", "Y", "X", "C", "V", "Space", "B", "N", "M", "Enter"]
         ]
 
         self.keys = [key for row in self.keyboard_layout for key in row]
@@ -79,11 +79,16 @@ class KeyboardApp(object):
         y = self.root.winfo_pointery() - self.y
         self.root.geometry(f"+{x}+{y}")
 
-    def quit(self):
+    def __quit_internal(self):
         # Call to close subprocess so the thread running it can join
         self.key_listner.stop()
+        self.key_listner.join()
         self.root.quit()
         exit(0)
+
+    def quit(self):
+        # Needs to be executed from main thread
+        self.root.after(0, self.__quit_internal)
 
     def on_key_action(self, action_type, pressed_key):
         # Set CTRL Flag if pressed to enable function keys
@@ -101,8 +106,10 @@ class KeyboardApp(object):
             # CTRL has been pressed, therefore function keys are now available
             match pressed_key:
                 case "F1":
-                    self.root.attributes('-alpha', 0.0) if self.root.attributes('-alpha') > 0.0 else self.root.attributes('-alpha', 0.9)
+                    self.root.attributes("-alpha", 0.0) if self.root.attributes("-alpha") > 0.0 else self.root.attributes("-alpha", 0.9)
                 case "Esc":
+                    # Closing takes some time so immediately hide the window
+                    #self.root.attributes("-alpha", 0.0)
                     self.quit()
                 case unknwon:
                     pass
