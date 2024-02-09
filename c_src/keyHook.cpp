@@ -21,58 +21,8 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 
     // Check for Controll Keys
     printf("%s%d\n", prefix, pKbStruct->vkCode);
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
-    switch (pKbStruct->vkCode) {
-        case VK_TAB:
-            printf("%sTab\n", prefix);
-            break;
-        case VK_CAPITAL:
-            printf("%sCaps\n", prefix);
-            break;
-        case VK_LSHIFT:
-        case VK_RSHIFT:
-        case VK_SHIFT:
-        case MK_SHIFT:
-            printf("%sShift\n", prefix);
-            break;
-        case VK_LCONTROL:
-        case VK_RCONTROL:
-        case VK_CONTROL:
-            printf("%sCtrl\n", prefix);
-            break;
-        case VK_MENU:
-        case VK_LMENU:
-        case VK_RMENU:
-            printf("%sAlt\n", prefix);
-            break;
-        case VK_RETURN:
-            printf("%sEnter\n", prefix);
-            break;
-        case VK_BACK:
-            printf("%sBack\n", prefix);
-            break;
-        // Function keys F1-F3
-        case VK_F1:
-        case VK_F2:
-        case VK_F3:
-            printf("%sF%d\n", prefix, pKbStruct->vkCode - VK_F1 + 1);
-            break;
-        case VK_ESCAPE:
-            printf("%sEsc\n", prefix);
-            break;
-        case VK_SPACE:
-            printf("%sSpace\n", prefix);
-            break;
-        default:
-            // Alphanumerical keys
-            if (isAlphaNumeric(pKbStruct->vkCode)) {
-                printf("%s%c\n", prefix, pKbStruct->vkCode);
-            }
-    }
-
-    // Flush stdout so if run as subprocess from main.py, the output is immediately available
     fflush(stdout);
-
+    
     // Call the next hook in the chain
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }

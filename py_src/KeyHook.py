@@ -16,7 +16,7 @@ class KeyActionType(Enum):
 
 class KeyHookThread(threading.Thread):
     def __init__(self, callback):
-        super().__init__()
+        super().__init__(daemon=True)
         self.alive = True
         self.callback = callback
         self.proc = None
@@ -36,8 +36,7 @@ class KeyHookThread(threading.Thread):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
             )
-        for stdout_line in iter(self.proc.stdout.readline, ""):
+        for stdout_line in iter(self.proc.stdout.readline, b""):
             if not self.alive:
                 break
-            if stdout_line != b'':
-                yield stdout_line.decode("utf-8").strip()
+            yield stdout_line.decode("utf-8").strip()

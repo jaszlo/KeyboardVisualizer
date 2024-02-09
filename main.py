@@ -3,19 +3,21 @@ import tkinter as tk
 from tkinter import ttk
 
 # Local imports
+from py_src import KeyboardLayout 
+from py_src import WindowsVK  
 from py_src.KeyHook import KeyHookThread, KeyActionType
-from py_src.Styles import ColorLevel, Styles, KeyboadLayout
+from py_src.Styles import ColorLevel, Styles
 
-# CTRL + F1 = Show/Hide the window
+# Ctrl + F1 = Show/Hide the window
 # Ctrl + Esc = Quit the application
-FUNCTIONAL_KEYS =  ["F1", "Esc"]
-CTRL_KEY = "Ctrl"
+FUNCTIONAL_KEYS =  ["F1", "ESC"]
+CTRL_KEY = "STRG"
 
 class KeyboardApp(object):
     def __init__(self):
         self.root = tk.Tk()
-        self.styles = Styles()
-        self.root.geometry(self.styles.dimensions)
+        Styles.init()
+        self.root.geometry(Styles.dimensions)
         self.root.title("Keyboard Visualizer")
         self.root.attributes("-topmost", True)
 
@@ -30,23 +32,14 @@ class KeyboardApp(object):
         self.ctrl_pressed = False
 
         # Thread running keyHook.exe as subprocess reading its stdout and calling the callback in the main thread
-        self.key_listner = KeyHookThread(self.on_key_action)
         # Start the thread at the end of the initialization to prevent exceptions
+        self.key_listner = KeyHookThread(self.on_key_action)
 
-        # Make background transparent
 
         # Define the updated keyboard layout
-        self.keyboard_layout = [
-            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-            ["Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P", "Back"],
-            ["Tab", "A", "S", "D", "F", "G", "H", "J", "K", "L"],
-            ["Caps", "", "Y", "X", "C", "V", "B", "N", "M", "Enter"],
-            ["Ctrl", "Shift", "Alt", "Space", "", "", "", "", "", "", ""]
-        ]
-        self.rows = len(self.keyboard_layout)
-        self.cols = max(len(row) for row in self.keyboard_layout)
-
-        self.keys = [key for row in self.keyboard_layout for key in row]
+        self.rows = len(KeyboardLayout.LAYOUT)
+        self.cols = max(len(row) for row in KeyboardLayout.LAYOUT)
+        self.keys = [key for row in KeyboardLayout.LAYOUT for key in row]
     
         # Create a canvas to hold the key buttons
         self.button_canvas = tk.Canvas(self.root, bg=ColorLevel.Background.value, highlightthickness=0, background=ColorLevel.Background.value)
@@ -55,26 +48,27 @@ class KeyboardApp(object):
         # Create a dictionary to store the key buttons
         self.key_buttons = {}
         # Create and place the key buttons on the canvas with resizable options
-        for row_idx, row in enumerate(self.keyboard_layout):
+        for row_idx, row in enumerate(KeyboardLayout.LAYOUT):
             for col_idx, key in enumerate(row):
                 if (key == ""):
                     continue
-                button = ttk.Button(self.button_canvas, text=key, style=self.styles.button_default_name)
+                button_text = KeyboardLayout.SPECIAL_MAPPINGS.get(key, key)
+                button = ttk.Button(self.button_canvas, text=button_text, style=Styles.button_default_name)
                 # Get the column and row span of the key
-                colspan, rowspan = KeyboadLayout.span_of(key)
+                colspan, rowspan = KeyboardLayout.span_of(key)
 
-                button.grid(row=row_idx, column=col_idx, sticky="nsew", padx=1, pady=1, columnspan=colspan, rowspan=rowspan)
+                button.grid(row=row_idx, column=col_idx, sticky=tk.NSEW, padx=1, pady=1, columnspan=colspan, rowspan=rowspan)
                 # Make buttons resizable
                 self.button_canvas.columnconfigure(col_idx, weight=1, uniform="group1")
                 self.button_canvas.rowconfigure(row_idx, weight=1)
                 self.key_buttons[key] = button
 
         # Override default controll key behaviour
-        self.root.bind("<Tab>", lambda _: "break")
-        self.root.bind("<Caps_Lock>", lambda _: "break")
-        self.root.bind("<Control_L>", lambda _: "break")
-        self.root.bind("<Shift_L>", lambda _: "break")
-        self.root.bind("<Alt_L>", lambda _: "break")
+        self.root.bind("<Tab>", lambda _: None)
+        self.root.bind("<Caps_Lock>", lambda _: None)
+        self.root.bind("<Control_L>", lambda _: None)
+        self.root.bind("<Shift_L>", lambda _: None)
+        self.root.bind("<Alt_L>", lambda _: None)
 
         # Dragging the window anywhere
         self.root.bind("<ButtonPress-1>", self.start_drag)
@@ -107,29 +101,32 @@ class KeyboardApp(object):
         self.root.mainloop()
 
     def on_key_action(self, action_type, pressed_key):
+        key_name = WindowsVK.get_name_of_virtual_key(int(pressed_key))
         # Set CTRL Flag if pressed to enable function keys
-        if pressed_key == CTRL_KEY:
+        if key_name == CTRL_KEY:
             self.ctrl_pressed = KeyActionType.is_press(action_type)
 
         # Highlight the corresponding button when the key is pressed, or reset it when released
-        if pressed_key in self.keys:
-            new_style = self.styles.button_highlight_name if KeyActionType.is_press(action_type) else self.styles.button_default_name
-            self.key_buttons[pressed_key].configure(style=new_style)
+        if key_name in self.keys:
+            new_style = Styles.button_highlight_name if KeyActionType.is_press(action_type) else Styles.button_default_name
+            self.key_buttons[key_name].configure(style=new_style)
+
         # Check for exit or minimize/maximize commands
-        elif pressed_key in FUNCTIONAL_KEYS and KeyActionType.is_press(action_type):
+        if key_name in FUNCTIONAL_KEYS and KeyActionType.is_press(action_type):
             if (not self.ctrl_pressed):
                 return
             # CTRL has been pressed, therefore function keys are now available
-            match pressed_key:
+            match key_name:
                 case "F1":
-                    self.root.attributes("-alpha", 0.0) if self.root.attributes("-alpha") > 0.0 else self.root.attributes("-alpha", ColorLevel.ALPHA)
-                case "Esc":
-                    # Closing takes some time so immediately hide the window
-                    #self.root.attributes("-alpha", 0.0)
+                    self.root.attributes("-alpha", 0.0) if self.root.attributes("-alpha") > 0.0 else self.root.attributes("-alpha", ColorLevel.ALPHA.value)
+                case "ESC":
                     self.quit()
                 case unknwon:
                     pass
 
 if __name__ == "__main__":
     app = KeyboardApp()
-    app.run()
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        app.quit()
