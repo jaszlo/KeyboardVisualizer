@@ -19,8 +19,25 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     KBDLLHOOKSTRUCT* pKbStruct = (KBDLLHOOKSTRUCT*)lParam;
     char *prefix = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) ? "Press-" : "Release-";
 
-    // Check for Controll Keys
-    printf("%s%d\n", prefix, pKbStruct->vkCode);
+    // Call MapVirtualKey to get the character
+    // Documentation @ https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeyw
+    int scan_code = MapVirtualKeyW(pKbStruct->vkCode, MAPVK_VK_TO_VSC_EX);    
+    int is_extended = pKbStruct->flags & LLKHF_EXTENDED;
+    const int buffer_size = 64;
+    wchar_t buffer[buffer_size];
+
+    // Shift scan code by 16 bits and enable LR Distinction to prepare for GetKeyNameTextW
+    scan_code <<= 16;
+    if (is_extended) {
+        int enable_lr_distinction = 1 << 24;
+        scan_code |= enable_lr_distinction;
+    }
+
+    // Call GetKeyNameText to get the key name
+    // Documentation @ https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getkeynametextw
+    int length = GetKeyNameTextW(scan_code, buffer, buffer_size);
+    wchar_t *key_name = _wcsdup(buffer);
+    printf("%s%ls\n", prefix, key_name);
     fflush(stdout);
     
     // Call the next hook in the chain

@@ -4,7 +4,6 @@ from tkinter import ttk
 
 # Local imports
 from py_src import KeyboardLayout 
-from py_src import WindowsVK  
 from py_src.KeyHook import KeyHookThread, KeyActionType
 from py_src.Styles import ColorLevel, Styles
 
@@ -101,7 +100,7 @@ class KeyboardApp(object):
         self.root.mainloop()
 
     def on_key_action(self, action_type, pressed_key):
-        key_name = WindowsVK.get_name_of_virtual_key(int(pressed_key))
+        key_name = pressed_key
         # Set CTRL Flag if pressed to enable function keys
         if key_name == CTRL_KEY:
             self.ctrl_pressed = KeyActionType.is_press(action_type)
