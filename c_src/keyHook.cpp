@@ -3,7 +3,7 @@
 #include <locale.h>
 
 // Capitalize umlaute just like all other letters as well
-wchar_t * fixGermanUmlauts(wchar_t *key_name) {
+wchar_t * fix_german_umlauts(wchar_t *key_name) {
     if (wcscmp(key_name, L"ö") == 0) {
         return L"Ö";
     } else if (wcscmp(key_name, L"ä") == 0) {
@@ -40,7 +40,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     // Documentation @ https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getkeynametextw
     int length = GetKeyNameTextW(scan_code, buffer, buffer_size);
     wchar_t *key_name = _wcsdup(buffer);
-    key_name = fixGermanUmlauts(key_name);
+    key_name = fix_german_umlauts(key_name);
     wprintf(L"%S%ls\n", prefix, key_name);
     fflush(stdout);
     
