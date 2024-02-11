@@ -1,15 +1,6 @@
-#include <windows.h>
+﻿#include <windows.h>
 #include <stdio.h>
-
-/*
- * This is a quote from the windows header file:
- * VK_0 - VK_9 are the same as ASCII '0' - '9' (0x30 - 0x39)
- * 0x3A - 0x40 : unassigned
- * VK_A - VK_Z are the same as ASCII 'A' - 'Z' (0x41 - 0x5A)
- */
-bool isAlphaNumeric(int vkCode) {
-    return (0x30 <= vkCode && vkCode <= 0x39) || (vkCode >= 0x41 && vkCode <= 0x5A);
-}
+#include <locale.h>
 
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode != HC_ACTION) {
@@ -23,7 +14,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     // Documentation @ https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeyw
     int scan_code = MapVirtualKeyW(pKbStruct->vkCode, MAPVK_VK_TO_VSC_EX);    
     int is_extended = pKbStruct->flags & LLKHF_EXTENDED;
-    const int buffer_size = 64;
+    const int buffer_size = 128;
     wchar_t buffer[buffer_size];
 
     // Shift scan code by 16 bits and enable LR Distinction to prepare for GetKeyNameTextW
@@ -37,15 +28,19 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     // Documentation @ https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getkeynametextw
     int length = GetKeyNameTextW(scan_code, buffer, buffer_size);
     wchar_t *key_name = _wcsdup(buffer);
-    printf("%s%ls\n", prefix, key_name);
+    wprintf(L"%S%ls\n", prefix, key_name);
     fflush(stdout);
     
     // Call the next hook in the chain
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
-
 int main() {
+
+    // Enable UTF-8 Output for AE, OE, UE to be printable
+    SetConsoleOutputCP(CP_UTF8);
+    setlocale(LC_ALL, "en_US.UTF-8");
+
     // Set up low-level keyboard hook
     HHOOK hook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
 
