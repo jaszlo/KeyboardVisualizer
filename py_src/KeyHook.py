@@ -6,8 +6,8 @@ from enum import Enum
 CMD = r".\\keyHook.exe"
 
 class KeyActionType(Enum):
-    Press = "Press"
-    Release = "Release"
+    Press = "P"
+    Release = "R"
 
     @staticmethod
     def is_press(string):
@@ -23,7 +23,8 @@ class KeyHookThread(threading.Thread):
 
     def run(self):
         for action in self.iter_stdout():
-            action_type, key = action.split("-")
+            # P-<KEY> for press, R-<KEY> for release
+            action_type, key = action[:1], action[2:]
             self.callback(action_type, key)
 
     def stop(self):

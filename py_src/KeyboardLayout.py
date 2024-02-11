@@ -1,3 +1,5 @@
+# Layout of the keyboard. Values are as given by the keyHook.exe
+# Modify this to match the layout of your keyboard. Also modify the modifiers and special keys accordingly
 LAYOUT = [
         [ "ESC", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
         [ "ZIRKUMFLEX", "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "0",  "ß",  "AKUT", "RÜCK"],  
@@ -7,7 +9,62 @@ LAYOUT = [
         [ "STRG", "LINKE WINDOWS", "ALT", "LEER", "", "", "", "", "", "ALT GR", "ANWENDUNG", "STRG-RECHTS"]
     ]
 
+VISUAL_LAYOUT = [
+        [ "Esc", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
+        [ "^", "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "0",  "ß",  "´", "Back"],  
+        [ "Tab", "q",  "w",  "e",  "r",  "t",  "z",  "u",  "i",  "o",  "p",  "ü",  "+"],
+        [ "Caps", "a",  "s",  "d",  "f",  "g",  "h",  "j",  "k",  "l",  "ö",  "ä",  "#", "Enter"],
+        [ "Shift", "<",  "y",  "x",  "c",  "v",  "b",  "n",  "m",  ",",  ".",  "-",  "Shift"],
+        [ "Ctrl", "Win", "Alt", "Space", "", "", "", "", "", "AltGr", "App", "Ctrl"]
+    ]
 
+SHIFT_LAYOUT = [
+        [ "Esc", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
+        [ "°", "!",  "\"", "§",  "$",  "%",  "&",  "/",  "(",  ")",  "=",  "`",  "´", "Back"],  
+        [ "Tab", "Q",  "W",  "E",  "R",  "T",  "Z",  "U",  "I",  "O",  "P",  "Ü",  "*"],
+        [ "Caps", "A",  "S",  "D",  "F",  "G",  "H",  "J",  "K",  "L",  "Ö",  "Ä",  "'", "Enter"],
+        [ "Shift", "<",  "Y",  "X",  "C",  "V",  "B",  "N",  "M",  ";",  ":",  "_",  "Shift"],
+        [ "Ctrl", "Win", "Alt", "Space", "", "", "", "", "", "AltGr", "App", "Ctrl"]
+    ]
+
+ALT_GR_LAYOUT = [
+    [ "Esc", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"],
+    [ "^", "1",  "²",  "³",  "4",  "5",  "6",  "{",  "[",  "]",  "}",  "\\",  "´", "Back"],  
+    [ "Tab", "@",  "w",  "€",  "r",  "t",  "z",  "u",  "i",  "o",  "p",  "ü",  "~"],
+    [ "Caps", "a",  "s",  "d",  "f",  "g",  "h",  "j",  "k",  "l",  "ö",  "ä",  "#", "Enter"],
+    [ "Shift", "|",  "y",  "x",  "c",  "v",  "b",  "n",  "m",  ",",  ".",  "-",  "Shift"],
+    [ "Ctrl", "Win", "Alt", "Space", "", "", "", "", "", "AltGr", "App", "Ctrl"]
+]
+
+
+def index_of(key):
+    for row in range(len(LAYOUT)):
+        for col in range(len(LAYOUT[row])):
+            if LAYOUT[row][col] == key:
+                return (row, col)
+    return None
+
+
+# CTRL + functional keys results in actions
+# CTRL + ESC = Exit
+# CTRL + F1 = Hide/Show
+FUNCTIONAL_KEYS = LAYOUT[0]
+
+
+# List of all modifiers. Values are as given by the keyHook.exe
+LCTRL_KEY = LAYOUT[5][0]
+LSHIT_KEY = LAYOUT[4][0]
+CAPS_KEY = LAYOUT[3][0]
+ALT_KEY = LAYOUT[5][2]
+ALT_GR_KEY = LAYOUT[5][9]
+RCTRL_KEY = LAYOUT[5][-1]
+RSHIFT_KEY = LAYOUT[4][-1]
+MODIFIERS = [LCTRL_KEY, LSHIT_KEY, CAPS_KEY, ALT_KEY, ALT_GR_KEY, RCTRL_KEY, RSHIFT_KEY]
+
+SHIFT_KEYS = [LSHIT_KEY, RSHIFT_KEY]
+CTRL_KEYS = [LCTRL_KEY, RCTRL_KEY]
+
+# Special layout for some keys. Values are as given by the keyHook.exe
 SPANS = {
     # (COL, ROW)
     "RÜCK": (1, 2),
@@ -17,37 +74,3 @@ SPANS = {
 
 def span_of(key):
     return SPANS.get(key, (1, 1))
-
-
-def get_shift_mapping(chr):
-    without_shift = "^1234567890ß´qwertzuiopü+asdfghjklöä#<yxcvbnm,.-"
-    with_shift = "!\"§$%&/()=QWERTZUIOPÜ*ASDFGHJKLÖÄ'YXCVBNM;:_"
-    if chr not in without_shift:
-        return chr
-    return with_shift[without_shift.index(chr)] if chr in without_shift else chr
-
-def get_alt_gr_mapping(chr):
-    without_alt_gr = "237890ßqe<+"
-    with_alt_gr = "²³{[]}\\@€|~" 
-    if chr not in without_alt_gr:
-        return chr
-    return with_alt_gr[without_alt_gr.index(chr)] if chr in without_alt_gr else chr
-
-SPECIAL_MAPPINGS = {
-    "ESC": "Esc",
-    "ZIRKUMFLEX": "^",
-    "TABULATOR": "Tab",
-    "FESTSTELL": "Caps",
-    "UMSCHALT": "Shift",
-    "STRG": "Ctrl",
-    "LINKE WINDOWS" : "Win",
-    "ALT": "Alt",
-    "LEER": "Space",
-    "ALT GR": "AltGr",
-    "ANWENDUNG": "App",
-    "STRG-RECHTS": "Ctrl",
-    "UMSCHALT RECHTS": "Shift",
-    "EINGABE": "Enter",
-    "RÜCK": "Back",
-    "AKUT": "´"
-}

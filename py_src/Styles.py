@@ -19,7 +19,7 @@ class Styles(object):
 
     @staticmethod
     def init():
-        Styles.button_default: ttk.Style = ttk.Style()
+        Styles.button_default = ttk.Style()
         Styles.button_default.configure(
             Styles.button_default_name,
             font=("Anonymous Pro", 10, "bold"),
@@ -33,7 +33,7 @@ class Styles(object):
             relief="flat"
         )
 
-        Styles.button_highlight = ttk.Style = ttk.Style()
+        Styles.button_highlight = ttk.Style()
         Styles.button_highlight.configure(
             Styles.button_highlight_name,
             font=("Anonymous Pro", 10, "bold"),

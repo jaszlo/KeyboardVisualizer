@@ -2,18 +2,30 @@
 #include <stdio.h>
 #include <locale.h>
 
+// Capitalize umlaute just like all other letters as well
+wchar_t * fixGermanUmlauts(wchar_t *key_name) {
+    if (wcscmp(key_name, L"ö") == 0) {
+        return L"Ö";
+    } else if (wcscmp(key_name, L"ä") == 0) {
+        return L"Ä";
+    } else if (wcscmp(key_name, L"ü") == 0) {
+        return L"Ü";
+    }
+    return key_name;
+}
+
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode != HC_ACTION) {
         return CallNextHookEx(NULL, nCode, wParam, lParam);
     }
 
     KBDLLHOOKSTRUCT* pKbStruct = (KBDLLHOOKSTRUCT*)lParam;
-    char *prefix = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) ? "Press-" : "Release-";
+    char *prefix = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) ? "P-" : "R-";
 
     // Call MapVirtualKey to get the character
     // Documentation @ https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeyw
-    int scan_code = MapVirtualKeyW(pKbStruct->vkCode, MAPVK_VK_TO_VSC_EX);    
-    int is_extended = pKbStruct->flags & LLKHF_EXTENDED;
+    int scan_code = MapVirtualKeyW(pKbStruct->vkCode, MAPVK_VK_TO_VSC_EX);
+    int is_extended = scan_code & (0xe1 << 8);
     const int buffer_size = 128;
     wchar_t buffer[buffer_size];
 
@@ -28,6 +40,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     // Documentation @ https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getkeynametextw
     int length = GetKeyNameTextW(scan_code, buffer, buffer_size);
     wchar_t *key_name = _wcsdup(buffer);
+    key_name = fixGermanUmlauts(key_name);
     wprintf(L"%S%ls\n", prefix, key_name);
     fflush(stdout);
     

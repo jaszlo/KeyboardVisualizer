@@ -3,14 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 
 # Local imports
-from py_src import KeyboardLayout 
+from py_src import KeyboardLayout
 from py_src.KeyHook import KeyHookThread, KeyActionType
 from py_src.Styles import ColorLevel, Styles
-
-# Ctrl + F1 = Show/Hide the window
-# Ctrl + Esc = Quit the application
-FUNCTIONAL_KEYS =  ["F1", "ESC"]
-CTRL_KEY = "STRG"
 
 class KeyboardApp(object):
     def __init__(self):
@@ -27,8 +22,11 @@ class KeyboardApp(object):
         # Remove default window decorations 
         self.root.overrideredirect(True)
     
-        # Flag to check if the CTRL key is pressed
-        self.ctrl_pressed = False
+        # Flag to check if the modifer keys have been pressed
+        self.modifiers_pressed = dict()
+        self.caps_already_toggled = False
+        for modifier in KeyboardLayout.MODIFIERS:
+            self.modifiers_pressed[modifier] = False
 
         # Thread running keyHook.exe as subprocess reading its stdout and calling the callback in the main thread
         # Start the thread at the end of the initialization to prevent exceptions
@@ -51,7 +49,7 @@ class KeyboardApp(object):
             for col_idx, key in enumerate(row):
                 if (key == ""):
                     continue
-                button_text = KeyboardLayout.SPECIAL_MAPPINGS.get(key, key)
+                button_text = KeyboardLayout.VISUAL_LAYOUT[row_idx][col_idx]    
                 button = ttk.Button(self.button_canvas, text=button_text, style=Styles.button_default_name)
                 # Get the column and row span of the key
                 colspan, rowspan = KeyboardLayout.span_of(key)
@@ -96,14 +94,30 @@ class KeyboardApp(object):
         # Needs to be executed from main thread
         self.root.after(0, self._quit_internal)
 
+
     def run(self):
         self.root.mainloop()
 
     def on_key_action(self, action_type, pressed_key):
         key_name = pressed_key
-        # Set CTRL Flag if pressed to enable function keys
-        if key_name == CTRL_KEY:
-            self.ctrl_pressed = KeyActionType.is_press(action_type)
+        # Set modifier flags if pressed to enable function keys
+        if key_name in KeyboardLayout.MODIFIERS and key_name != KeyboardLayout.CAPS_KEY:
+            self.modifiers_pressed[key_name] = KeyActionType.is_press(action_type)
+        # Caps toggle needs to be handled differently
+        elif key_name == KeyboardLayout.CAPS_KEY:
+            if not self.caps_already_toggled and KeyActionType.is_press(action_type):
+                self.modifiers_pressed[KeyboardLayout.CAPS_KEY] = not self.modifiers_pressed[KeyboardLayout.CAPS_KEY]
+                self.caps_already_toggled = True
+            if not KeyActionType.is_press(action_type):
+                self.caps_already_toggled = False
+
+        if key_name in KeyboardLayout.SHIFT_KEYS or key_name == KeyboardLayout.CAPS_KEY:
+            # if not self.modifiers_pressed[KeyboardLayout.ALT_GR_KEY]:            
+            self.toggle_buttons_shift()
+
+        if key_name == KeyboardLayout.ALT_GR_KEY:
+            self.toggle_buttons_altgr()
+
 
         # Highlight the corresponding button when the key is pressed, or reset it when released
         if key_name in self.keys:
@@ -111,8 +125,8 @@ class KeyboardApp(object):
             self.key_buttons[key_name].configure(style=new_style)
 
         # Check for exit or minimize/maximize commands
-        if key_name in FUNCTIONAL_KEYS and KeyActionType.is_press(action_type):
-            if (not self.ctrl_pressed):
+        if key_name in KeyboardLayout.FUNCTIONAL_KEYS and KeyActionType.is_press(action_type):
+            if not any(self.modifiers_pressed[ctrl] for ctrl in KeyboardLayout.CTRL_KEYS):
                 return
             # CTRL has been pressed, therefore function keys are now available
             match key_name:
@@ -122,7 +136,26 @@ class KeyboardApp(object):
                     self.quit()
                 case unknwon:
                     pass
+    
+    def toggle_buttons_shift(self):
+        shift_pressed = (
+            self.modifiers_pressed[KeyboardLayout.LSHIT_KEY]  or 
+            self.modifiers_pressed[KeyboardLayout.RSHIFT_KEY] or 
+            self.modifiers_pressed[KeyboardLayout.CAPS_KEY]
+        )
+        layout = KeyboardLayout.SHIFT_LAYOUT if shift_pressed else KeyboardLayout.VISUAL_LAYOUT
+        for key, button in self.key_buttons.items():
+            row, col = KeyboardLayout.index_of(key)
+            button_text = layout[row][col]
+            button.configure(text=button_text)
 
+    def toggle_buttons_altgr(self):
+        layout = KeyboardLayout.ALT_GR_LAYOUT if self.modifiers_pressed[KeyboardLayout.ALT_GR_KEY] else KeyboardLayout.VISUAL_LAYOUT
+        for key, button in self.key_buttons.items():
+            row, col = KeyboardLayout.index_of(key)
+            button_text = layout[row][col]
+            button.configure(text=button_text)
+    
 if __name__ == "__main__":
     app = KeyboardApp()
     try:
