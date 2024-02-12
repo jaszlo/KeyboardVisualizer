@@ -3,9 +3,7 @@
 This is a simple keyboard visualizer designed to be easy for newer programmers to understand, ensuring that it contains nothing malicious. 
 Unlike other open-source keyboard visualizers that are often complex, this one has fewer than 500 lines of code (loc) and is straightforward.
 
-
 https://github.com/jaszlo/KeyboardVisualizer/assets/55958177/65cc2fea-1024-4218-820f-e300caa6cbbb
-
 
 ## Is this a keylogger?
 No, it is not. 
@@ -15,6 +13,20 @@ Keys are only printed to the stdout. This C++ application is then launched as a 
 The actions of this thread can be seen in [KeyHook.py](./py_src/KeyHook.py). 
 It simply reads the stdout and visualizes the pressed keys in the frontend. 
 Because the frontend is written in Python, extending support for other operating systems should be relatively straightforward.
+
+## Running this application
+In order for this application to work you need a 
+[**C-Compiler**](https://learn.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=msvc-170) and 
+[**python 3.10**](https://www.python.org/downloads/) or later.
+In order to run this application you need to compile the keyHook.cpp. Adding `User32.lib` is required.
+```sh
+cl .\keyHook.cpp  /link User32.lib
+```
+
+After that move the resulting `keyHook.exe` next to the `main.py`. To start the application just run `main.py`. 
+```sh
+python main.py
+```
 
 ## Adding a new keyboard and customizations
 If you want to modify the color, transparency, or default size of the visualized keyboard, make changes in the [Styles.py](./py_src/Styles.py) file according to your preferences. 
