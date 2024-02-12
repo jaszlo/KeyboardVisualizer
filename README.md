@@ -3,8 +3,6 @@
 This is a simple keyboard visualizer designed to be easy for newer programmers to understand, ensuring that it contains nothing malicious. 
 Unlike other open-source keyboard visualizers that are often complex, this one has fewer than 500 lines of code (loc) and is straightforward.
 
-https://github.com/jaszlo/KeyboardVisualizer/assets/55958177/65cc2fea-1024-4218-820f-e300caa6cbbb
-
 ## Is this a keylogger?
 No, it is not. 
 The potentially concerning aspect is written in C++ and currently only supports Windows. 
