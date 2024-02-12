@@ -8,14 +8,14 @@ class ColorLevel(Enum):
     Intermediate = "#DDDBF1"
     Highlight = "#3C4F76"
     Text = "#D1BEB0"
-    ALPHA = 1.0
+    ALPHA = 0.8
 
 
 class Styles(object):
     # Use TLabel as parent so styling actually works
     button_default_name = "default.TLabel"
     button_highlight_name = "highlighted.TLabel"
-    dimensions = "1200x400+50+600" # width x height + x_offset + y_offset
+    dimensions = "960x320+50+700" # width x height + x_offset + y_offset
 
     @staticmethod
     def init():
