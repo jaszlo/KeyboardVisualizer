@@ -129,12 +129,27 @@ class KeyboardApp(object):
             if not any(self.modifiers_pressed[ctrl] for ctrl in KeyboardLayout.CTRL_KEYS):
                 return
             # CTRL has been pressed, therefore function keys are now available
+            print(key_name)
             match key_name:
                 case "F1":
                     self.root.attributes("-alpha", 0.0) if self.root.attributes("-alpha") > 0.0 else self.root.attributes("-alpha", ColorLevel.ALPHA.value)
                 case "ESC":
                     self.quit()
-                case unknwon:
+                case "+":
+                    # Increase window size bit by bit
+                    geometry = self.root.geometry()
+                    dim, posx, posy = geometry.split("+")
+                    width, height = dim.split("x")
+                    new_width, new_height = int(int(width) * 1.02), int(int(height) * 1.02)
+                    self.root.geometry(f"{new_width}x{new_height}+{posx}+{posy}")
+                case "-":
+                    # Decrase window size bit by bit
+                    geometry = self.root.geometry()
+                    dim, posx, posy = geometry.split("+")
+                    width, height = dim.split("x")
+                    new_width, new_height = int(int(width) * 0.98), int(int(height) * 0.98)
+                    self.root.geometry(f"{new_width}x{new_height}+{posx}+{posy}")
+                case _:
                     pass
     
     def toggle_buttons_shift(self):

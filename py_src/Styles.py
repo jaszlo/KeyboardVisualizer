@@ -4,10 +4,10 @@ import tkinter as tk
 
 # Graphics settings classes
 class ColorLevel(Enum):
-    Background = "#4C1036"
-    Intermediate = "#72195A"
-    Highlight = "#9F96C5"
-    Text = "#FFFFFF"
+    Background = "#151E3F"
+    Intermediate = "#030027"
+    Highlight = "#F2F3D9"
+    Text = "#C16E70"
     ALPHA = 1.0
 
 

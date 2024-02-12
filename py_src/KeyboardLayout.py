@@ -48,7 +48,8 @@ def index_of(key):
 # CTRL + functional keys results in actions
 # CTRL + ESC = Exit
 # CTRL + F1 = Hide/Show
-FUNCTIONAL_KEYS = LAYOUT[0]
+#                 First Row      "+"            "-"
+FUNCTIONAL_KEYS = LAYOUT[0] + [LAYOUT[2][-1], LAYOUT[4][-2]]
 
 
 # List of all modifiers. Values are as given by the keyHook.exe
