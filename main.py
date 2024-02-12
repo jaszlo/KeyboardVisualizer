@@ -129,7 +129,6 @@ class KeyboardApp(object):
             if not any(self.modifiers_pressed[ctrl] for ctrl in KeyboardLayout.CTRL_KEYS):
                 return
             # CTRL has been pressed, therefore function keys are now available
-            print(key_name)
             match key_name:
                 case "F1":
                     self.root.attributes("-alpha", 0.0) if self.root.attributes("-alpha") > 0.0 else self.root.attributes("-alpha", ColorLevel.ALPHA.value)
