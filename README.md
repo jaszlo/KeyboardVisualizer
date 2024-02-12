@@ -28,8 +28,13 @@ After that move the resulting `keyHook.exe` next to the `main.py`. To start the 
 python main.py
 ```
 
-To close the application hit `CTRL + ESC`. In general `CTRL` is the modifiert that allows to controll the window.
-`CTRL + F1` hides/shows the window.
+To close the application hit `CTRL + ESC`. In general `CTRL` is the modifier that allows to controll the window.
+The following is a list of all currently available functionality.
+
+- `CTRL + ESC` Close Application
+- `CTRL + F1`  Toggle Show/Hide
+- `CTRL + +`   Increase Window Size
+- `CTRL + -`   Decrease Window Size
 
 ## Adding a new keyboard and customizations
 If you want to modify the color, transparency, or default size of the visualized keyboard, make changes in the [Styles.py](./py_src/Styles.py) file according to your preferences. 
