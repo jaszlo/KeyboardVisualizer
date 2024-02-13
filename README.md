@@ -2,6 +2,10 @@
 
 This is a simple keyboard visualizer designed to be easy for newer programmers to understand, ensuring that it contains nothing malicious. 
 Unlike other open-source keyboard visualizers that are often complex, this one has fewer than 500 lines of code (loc) and is straightforward.
+It currently sits at 418 loc
+
+<img src="https://github.com/jaszlo/KeyboardVisualizer/assets/55958177/cc1ea3a5-e0a6-49a6-8942-2695520199c4"></img>
+<br>
 
 https://github.com/jaszlo/KeyboardVisualizer/assets/55958177/3dd2dcb3-f562-4ea2-891d-9877f63cb62a
 
