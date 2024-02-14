@@ -2,8 +2,19 @@ import threading
 import subprocess
 from enum import Enum
 
-# Define the command to run the keyHook.exe
-CMD = r".\\keyHook.exe"
+# Define the command to run the keyHook executable
+
+import platform
+system = platform.system().lower()
+prefix = "Unknown"
+if system == "windows":
+    prefix = ".\\win"
+elif system == "darwin":
+    prefix = "./mac"
+elif system == "linux":
+    prefix = "./lin"
+postfix = ".exe" if platform == "win" else ""
+CMD = f"{prefix}KeyHook{postfix}"
 
 class KeyActionType(Enum):
     Press = "P"

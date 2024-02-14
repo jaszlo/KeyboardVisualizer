@@ -28,7 +28,7 @@ class KeyboardApp(object):
         for modifier in KeyboardLayout.MODIFIERS:
             self.modifiers_pressed[modifier] = False
 
-        # Thread running keyHook.exe as subprocess reading its stdout and calling the callback in the main thread
+        # Thread running keyHook executable as subprocess reading its stdout and calling the callback in the main thread
         # Start the thread at the end of the initialization to prevent exceptions
         self.key_listner = KeyHookThread(self.on_key_action)
 
