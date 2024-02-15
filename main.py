@@ -1,6 +1,8 @@
 # Global imports
 import tkinter as tk
 from tkinter import ttk
+import platform
+system = platform.system().lower()
 
 # Local imports
 from py_src import KeyboardLayout
@@ -19,8 +21,9 @@ class KeyboardApp(object):
         self.root.attributes('-alpha', ColorLevel.ALPHA.value)
         self.root.configure(bg=ColorLevel.Background.value, borderwidth=7, highlightthickness=0)
 
-        # Remove default window decorations 
-        self.root.overrideredirect(True)
+        # Remove default window decorations on windows
+        if system == "windows":
+            self.root.overrideredirect(True)
     
         # Flag to check if the modifer keys have been pressed
         self.modifiers_pressed = dict()

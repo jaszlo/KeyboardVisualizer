@@ -23,7 +23,7 @@ if system == "windows":
 
     SHIFT_LAYOUT = [
             [ "Esc", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
-            [ "°", "!",  "\"", "§",  "$",  "%",  "&",  "/",  "(",  ")",  "=",  "`",  "´", "Back"],  
+            [ "°", "!",  "\"", "§",  "$",  "%",  "&",  "/",  "(",  ")",  "=",  "?",  "´", "Back"],  
             [ "Tab", "Q",  "W",  "E",  "R",  "T",  "Z",  "U",  "I",  "O",  "P",  "Ü",  "*"],
             [ "Caps", "A",  "S",  "D",  "F",  "G",  "H",  "J",  "K",  "L",  "Ö",  "Ä",  "'", "Enter"],
             [ "Shift", "<",  "Y",  "X",  "C",  "V",  "B",  "N",  "M",  ";",  ":",  "_",  "Shift"],
@@ -69,30 +69,26 @@ if system == "windows":
 
 elif "darwin":
     LAYOUT = [
-            [ "ESC", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
-            [ "ZIRKUMFLEX", "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "0",  "ß",  "AKUT", "RÜCK"],  
-            [ "TABULATOR", "Q",  "W",  "E",  "R",  "T",  "Z",  "U",  "I",  "O",  "P",  "Ü",  "+"],
-            [ "FESTSTELL", "A",  "S",  "D",  "F",  "G",  "H",  "J",  "K",  "L",  "Ö",  "Ä",  "#", "EINGABE"],
-            [ "UMSCHALT", "<",  "Y",  "X",  "C",  "V",  "B",  "N",  "M",  ",",  ".",  "-",  "UMSCHALT RECHTS"],
-            [ "STRG", "LINKE WINDOWS", "ALT", "LEER", "", "", "", "", "", "ALT GR", "ANWENDUNG", "STRG-RECHTS"]
+            [ "Escape", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"],
+            [ "^", "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "0",  "ß",  "Akut", "Delete"],  
+            [ "Tab", "q",  "w",  "e",  "r",  "t",  "z",  "u",  "i",  "o",  "p",  "ü",  "+"],
+            [ "Caps", "a",  "s",  "d",  "f",  "g",  "h",  "j",  "k",  "l",  "ö",  "ä",  "#", "Return"],
+            [ "Shift", "<",  "y",  "x",  "c",  "v",  "b",  "n",  "m",  ",",  ".",  "-",  "Right Shift"],
+            [ "Control", "Option", "Command", "Space", "", "", "", "", "Right Command", "Right Option", "Right Shift" ,"Up Arrow", "Down Arrow", "Left Arrow", "Right Arrow"]
         ]
 
-    VISUAL_LAYOUT = [
-            [ "Esc", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
-            [ "^", "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "0",  "ß",  "´", "Back"],  
-            [ "Tab", "q",  "w",  "e",  "r",  "t",  "z",  "u",  "i",  "o",  "p",  "ü",  "+"],
-            [ "Caps", "a",  "s",  "d",  "f",  "g",  "h",  "j",  "k",  "l",  "ö",  "ä",  "#", "Enter"],
-            [ "Shift", "<",  "y",  "x",  "c",  "v",  "b",  "n",  "m",  ",",  ".",  "-",  "Shift"],
-            [ "Ctrl", "Win", "Alt", "Space", "", "", "", "", "", "AltGr", "App", "Ctrl"]
-        ]
+    VISUAL_LAYOUT = [list.copy(row) for row in LAYOUT]
+    for row, _ in enumerate(VISUAL_LAYOUT):
+        for col, _ in enumerate(VISUAL_LAYOUT[row]):
+            VISUAL_LAYOUT[row][col] = VISUAL_LAYOUT[row][col].strip("Right ")
 
     SHIFT_LAYOUT = [
-            [ "Esc", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
-            [ "°", "!",  "\"", "§",  "$",  "%",  "&",  "/",  "(",  ")",  "=",  "`",  "´", "Back"],  
+            [ "Escape", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"], 
+            [ "°", "!",  "\"", "§",  "$",  "%",  "&",  "/",  "(",  ")",  "=",  "?",  "´", "Delete"],  
             [ "Tab", "Q",  "W",  "E",  "R",  "T",  "Z",  "U",  "I",  "O",  "P",  "Ü",  "*"],
-            [ "Caps", "A",  "S",  "D",  "F",  "G",  "H",  "J",  "K",  "L",  "Ö",  "Ä",  "'", "Enter"],
+            [ "Caps", "A",  "S",  "D",  "F",  "G",  "H",  "J",  "K",  "L",  "Ö",  "Ä",  "'", "Return"],
             [ "Shift", "<",  "Y",  "X",  "C",  "V",  "B",  "N",  "M",  ";",  ":",  "_",  "Shift"],
-            [ "Ctrl", "Win", "Alt", "Space", "", "", "", "", "", "AltGr", "App", "Ctrl"]
+            [ "Control", "Option", "Command", "Space", "", "", "", "", "Command", "Option", "Shift" ,"Up Arrow", "Down Arrow", "Left Arrow", "Right Arrow"]
         ]
 
     ALT_GR_LAYOUT = [
@@ -101,7 +97,7 @@ elif "darwin":
         [ "Tab", "@",  "w",  "€",  "r",  "t",  "z",  "u",  "i",  "o",  "p",  "ü",  "~"],
         [ "Caps", "a",  "s",  "d",  "f",  "g",  "h",  "j",  "k",  "l",  "ö",  "ä",  "#", "Enter"],
         [ "Shift", "|",  "y",  "x",  "c",  "v",  "b",  "n",  "m",  ",",  ".",  "-",  "Shift"],
-        [ "Ctrl", "Win", "Alt", "Space", "", "", "", "", "", "AltGr", "App", "Ctrl"]
+        [ "Control", "Option", "Command", "Space", "", "", "", "", "Command", "Option", "Shift" ,"Up Arrow", "Down Arrow", "Left Arrow", "Right Arrow"]
     ]
 
     # CTRL + functional keys results in actions
@@ -127,10 +123,14 @@ elif "darwin":
     # Special layout for some keys. Values are as given by the keyHook executable
     SPANS = {
         # (COL, ROW)
-        "RÜCK": (1, 2),
-        "EINGABE": (1, 2),
-        "LEER": (6, 1),
+        "Delete": (1, 2),
+        "Return": (1, 2),
+        "Space": (5, 1),
+        "Tab": (2, 1),
+        "Caps": (3, 1),
+        "Shift": (2, 1),
     }
+    SPANS = dict()
 
 
 def index_of(key):

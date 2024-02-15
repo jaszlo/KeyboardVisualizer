@@ -8,7 +8,7 @@ class ColorLevel(Enum):
     Intermediate = "#DDDBF1"
     Highlight = "#3C4F76"
     Text = "#D1BEB0"
-    ALPHA = 0.8
+    ALPHA = 1
 
 
 class Styles(object):

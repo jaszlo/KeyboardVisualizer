@@ -1,5 +1,6 @@
 # VS Code
 .vs/
+macKeyHook
 
 # PyCache files
 __pycache__/

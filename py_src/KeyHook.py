@@ -52,3 +52,18 @@ class KeyHookThread(threading.Thread):
             if not self.alive:
                 break
             yield stdout_line.decode("utf-8").strip()
+
+
+if __name__ == "__main__":
+    def on_key_action(action_type, key):
+        print(action_type, key)
+
+    key_listner = KeyHookThread(on_key_action)
+    key_listner.start()
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        key_listner.stop()
+        key_listner.join()
+        print("KeyHook stopped")
